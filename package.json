@@ -1,22 +1,20 @@
 {
-  "name": "electron-quick-start",
+  "name": "project-money-tracker",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "description": "A simple Electron application for managing money from projects",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
-  "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
-  ],
+  "repository": "https://github.com/leo93921/project-money-tracker",
+  "keywords": [],
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "~1.7.8"
+  },
+  "dependencies": {
+    "jquery": "^3.3.1",
+    "materialize-css": "^0.100.2"
   }
 }
