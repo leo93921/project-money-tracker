@@ -1,22 +1,45 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
-    <link rel="stylesheet" href="./node_modules/materialize-css/dist/css/materialize.min.css">
-    <script src="./node_modules/materialize-css/js/hammer.min.js" onload="window.Hammer = module.exports;"></script>
-    <script src="./node_modules/materialize-css/dist/js/materialize.min.js"></script>
-  </head>
-  <body>
-    <h1>Hello World!</h1>
-    <!-- All of the Node.js APIs are available in this renderer process. -->
-    We are using Node.js <script>document.write(process.versions.node)</script>,
-    Chromium <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>.
-    AAAA
-    <script>
-      // You can also require other files to run in this process
-      require('./renderer.js')
-    </script>
-  </body>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Hello World!</title>
+  <link rel="stylesheet" href="./node_modules/material-design-icons/iconfont/material-icons.css">
+  <link rel="stylesheet" href="./node_modules/materialize-css/dist/css/materialize.min.css">
+  <script src="./node_modules/materialize-css/js/hammer.min.js" onload="window.Hammer = module.exports;"></script>
+  <script src="./node_modules/materialize-css/dist/js/materialize.min.js"></script>
+</head>
+
+<body>
+  <nav>
+    <div class="nav-wrapper">
+      <a class="brand-logo center">Project Money Tracker</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title activator grey-text text-darken-4">Card Title
+          <i class="material-icons right">more_vert</i>
+        </span>
+        <p>
+          <a href="#">This is a link</a>
+        </p>
+      </div>
+      <div class="card-reveal">
+        <span class="card-title grey-text text-darken-4">Card Title
+          <i class="material-icons right">close</i>
+        </span>
+        <p>Here is some more information about this product that is only revealed once clicked on.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // You can also require other files to run in this process
+    require('./renderer.js')
+  </script>
+</body>
+
 </html>
