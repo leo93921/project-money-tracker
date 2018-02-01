@@ -1,45 +1,137 @@
 <!DOCTYPE html>
 <html>
 
-<head>
-  <meta charset="UTF-8">
-  <title>Hello World!</title>
-  <link rel="stylesheet" href="./node_modules/material-design-icons/iconfont/material-icons.css">
-  <link rel="stylesheet" href="./node_modules/materialize-css/dist/css/materialize.min.css">
-  <script src="./node_modules/materialize-css/js/hammer.min.js" onload="window.Hammer = module.exports;"></script>
-  <script src="./node_modules/materialize-css/dist/js/materialize.min.js"></script>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <title>Hello World!</title>
+        <link rel="stylesheet" href="./node_modules/material-design-icons/iconfont/material-icons.css">
+        <link rel="stylesheet" href="./node_modules/materialize-css/dist/css/materialize.min.css">
+        <script src="./node_modules/materialize-css/js/hammer.min.js" onload="window.Hammer = module.exports;"></script>
+        <script src="./node_modules/materialize-css/dist/js/materialize.min.js"></script>
+        <script src="./node_modules/chart.js/dist/Chart.bundle.min.js"></script>
+    </head>
 
-<body>
-  <nav>
-    <div class="nav-wrapper">
-      <a class="brand-logo center">Project Money Tracker</a>
-    </div>
-  </nav>
+    <body>
+        <ul id="slide-out" class="side-nav">
+            <li>
+                <div class="user-view">
+                    <div class="background">
+                        <img src="./assets/images/user_backgroud.jpg">
+                    </div>
+                    <a href="#!name">
+                        <span class="white-text name">John Doe</span>
+                    </a>
+                    <a href="#!email">
+                        <span class="white-text email">&nbsp;</span>
+                    </a>
+                </div>
+            </li>
+            <li>
+                <a class="waves-effect" href="#!">Project name</a>
+            </li>
+            <li>
+                <a class="waves-effect" href="#!">Another project</a>
+            </li>
+        </ul>
+        <nav class="light-blue darken-1">
+            <div class="nav-wrapper">
+                <a href="#" class="brand-logo center">Project name</a>
+                <a href="#" data-activates="slide-out" class="button-collapse show-on-large show-on-medium show-on-small">
+                    <i class="material-icons">menu</i>
+                </a>
+            </div>
+        </nav>
 
-  <div class="container">
-    <div class="card">
-      <div class="card-content">
-        <span class="card-title activator grey-text text-darken-4">Card Title
-          <i class="material-icons right">more_vert</i>
-        </span>
-        <p>
-          <a href="#">This is a link</a>
-        </p>
-      </div>
-      <div class="card-reveal">
-        <span class="card-title grey-text text-darken-4">Card Title
-          <i class="material-icons right">close</i>
-        </span>
-        <p>Here is some more information about this product that is only revealed once clicked on.</p>
-      </div>
-    </div>
-  </div>
+        <div class="container">
+            <div class="section">
+                <div class="row">
+                    <div class="col s12">
+                        <h5>
+                            Descrizione
+                        </h5>
+                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus sed reiciendis ullam rem, laudantium libero consequatur nemo necessitatibus error illo earum expedita id magnam! Quae nulla saepe deleniti nam et expedita laborum labore similique quod beatae eos unde dolore provident tempora, consequatur esse voluptatem quas sunt reiciendis est delectus quisquam rem. Ullam voluptatum doloremque in unde repellendus? Neque saepe accusamus facilis culpa repellat ut dolores commodi iusto inventore amet blanditiis praesentium velit, aperiam harum pariatur error, numquam mollitia corporis. Aspernatur numquam quis dolore at! Animi amet ipsum eligendi omnis sequi nam voluptate nisi rem, velit quia neque maxime, et vero?</p>
+                    </div>
+                </div>
+            </div>
+            <div class="section">
+                <div class="row center-align">
+                    <div class="col m8 s12">
+                        <h5>Tabella degli acconti</h5>
+                        <table class="bordered responsive-table centered">
+                            <thead>
+                                <tr>
+                                    <th>Accounto</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>150,00€</td>
+                                    <td>21-12-2017</td>
+                                </tr>
+                                <tr>
+                                    <td>150,00€</td>
+                                    <td>21-12-2017</td>
+                                </tr>
+                                <tr>
+                                    <td>150,00€</td>
+                                    <td>21-12-2017</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="section left-align">
+                            <a class="waves-effect waves-light btn light-blue darken-1">Inserisci</a>
+                        </div>
 
-  <script>
-    // You can also require other files to run in this process
-    require('./renderer.js')
-  </script>
-</body>
+                    </div>
+                    <div class="col m4 s12">
+                        <h5>Grafico</h5>
+                        <canvas id="costsCanvas" width="400" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="fixed-action-btn horizontal click-to-toggle">
+                <a class="btn-floating btn-large red waves-effect waves-light">
+                  <i class="material-icons">add</i>
+                </a>
+              </div>
+        </div>
+
+        <script>
+            // You can also require other files to run in this process
+            require('./renderer.js')
+
+            $(".button-collapse").sideNav();
+
+            var ctx = document.getElementById("costsCanvas").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: [
+                        "Dati", "Da dare"
+                    ],
+                    datasets: [
+                        {
+                            label: 'Acconti',
+                            data: [
+                                350, 150
+                            ],
+                            backgroundColor: [
+                                'rgba(129, 212, 83, 1)', 'rgba(54, 162, 235, 1)'
+                            ],
+                            borderColor: [
+                                'rgba(129, 212, 83, 1)', 'rgba(54, 162, 235, 1)'
+                            ],
+                            hoverBackgroundColor: [
+                                'rgba(129, 212, 83, 1)', 'rgba(54, 162, 235, 1)'
+                            ],
+                            borderWidth: 1
+                        }
+                    ]
+                },
+                options: {}
+            });
+        </script>
+    </body>
 
 </html>
