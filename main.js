@@ -1,4 +1,6 @@
 const electron = require('electron')
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database("./db.pmt.sqlite")
 // Module to control application life.
 const app = electron.app
 // Module to create native browser window.
@@ -34,10 +36,14 @@ function createWindow () {
   })
 }
 
+function init() {
+  createWindow();
+  createTables();
+}
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', init)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -58,3 +64,10 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+function createTables() {
+  // No error: create table
+  sql_main_table = 'CREATE TABLE IF NOT EXISTS project (id INTEGER PRIMARY KEY, name TEXT, description TEXT)';
+
+  db.run(sql_main_table);
+
+}
