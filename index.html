@@ -54,7 +54,7 @@
                 <div class="row center-align">
                     <div class="col m8 s12">
                         <h5>Tabella degli acconti</h5>
-                        <table class="bordered responsive-table centered">
+                        <table class="bordered responsive-table centered" id="deposits-table">
                             <thead>
                                 <tr>
                                     <th>Accounto</th>
@@ -268,12 +268,15 @@
             ipcRenderer.on("project:selected:fetched", (event, project) => {
                 $("#project-name").text(project.name);
                 $("#project-description").text(project.description);
+                $("#deposits-table tbody").html("");
+                project.deposits.forEach((deposit) => {
+                    const tr = $("<tr></tr>")
+                    tr.append("<td>" + deposit.value + "</td>");
+                    tr.append("<td>" + deposit.deposit_date + "</td>");
+                    $("#deposits-table tbody").append(tr);
+                });
             });
 
-            // After a deposit has been added, refresh list of deposits
-            ipcRenderer.on('deposit:fetched', (event, deposits) => {
-                console.log(deposits);
-            });
         </script>
     </body>
 

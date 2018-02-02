@@ -101,25 +101,31 @@ ipcMain.on('slideOut:open', (event) => {
 // Catch project:selected
 ipcMain.on('project:selected', (event, project) => {
   selectedProject = project;
-  event.sender.send("project:selected:fetched", project)
-
+  fetchProject(event);
 });
 
 // Catch deposit:add
 ipcMain.on('deposit:add', (event, deposit) => {
+  db.run(
+    "INSERT INTO deposit(project_id, value, deposit_date) VALUES(?, ?, ?)",
+    [selectedProject.id, deposit.value, deposit.date],
+    fetchProject(event)
+  );
+});
+
+function fetchProject(event) {
+  let aProject = {};
+
   // Empty the array
   deposits.splice(0, deposits.length);
 
-  db.serialize(function () {
-    db.run(
-      "INSERT INTO deposit(project_id, value, deposit_date) VALUES(?, ?, ?)",
-      [selectedProject.id, deposit.value, deposit.date]);
-    db.each("SELECT * FROM deposit WHERE project_id = ?", [selectedProject.id], (error, row) => {
-      deposits.push(row);
-    }, (error, count) => {
-      if (count > 0) {
-        event.sender.send("deposit:fetched", deposits);
-      }
-    });
+  db.each("SELECT * FROM deposit WHERE project_id = ?", [selectedProject.id], (error, row) => {
+    deposits.push(row);
+  }, (error, count) => {
+    aProject.deposits = deposits;
+    aProject.name = selectedProject.name;
+    aProject.description = selectedProject.description;
+    
+    event.sender.send("project:selected:fetched", aProject);
   });
-});
+}
