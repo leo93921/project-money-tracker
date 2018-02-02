@@ -72,7 +72,7 @@ app.on('activate', function () {
 // code. You can also put them in separate files and require them here.
 function createTables() {
   // No error: create table
-  sql_main_table = 'CREATE TABLE IF NOT EXISTS project (id INTEGER PRIMARY KEY, name TEXT, description TEXT)';
+  sql_main_table = 'CREATE TABLE IF NOT EXISTS project (id INTEGER PRIMARY KEY, name TEXT, description TEXT, to_give NUMBER NOT NULL)';
   sql_deposit_table = 'CREATE TABLE IF NOT EXISTS deposit (id INTEGER PRIMARY KEY, project_id INTEGER NOT NULL, value NUMBER, deposit_date DATE)';
 
   db.run(sql_main_table);
@@ -81,7 +81,10 @@ function createTables() {
 
 // Catch project:add
 ipcMain.on('project:add', (event, obj) => {
-  db.run("INSERT INTO project(name, description) VALUES (?, ?)", [obj.name, obj.description]);
+  db.run(
+    "INSERT INTO project(name, description, to_give) VALUES (?, ?, ?)", 
+    [obj.name, obj.description, obj.value]
+  );
 });
 
 // Catch slideOut:open

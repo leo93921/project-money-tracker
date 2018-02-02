@@ -101,9 +101,13 @@
                 <div class="row">
                     <form class="col s12">
                         <div class="row">
-                            <div class="col s12 input-field">
+                            <div class="col s6 input-field">
                                 <input type="text" id="iProjectName">
                                 <label for="iProjectName">Project Name</label>
+                            </div>
+                            <div class="col s6 input-field">
+                                <input type="number" id="iProjectValue">
+                                <label for="iProjectValue">Value</label>
                             </div>
                         </div>
                         <div class="row">
@@ -146,16 +150,15 @@
             </div>
         </div>
 
-
         <script>
             // You can also require other files to run in this process
             require('./renderer.js');
             const electron = require('electron')
-            const { ipcRenderer } = electron;
+            const {ipcRenderer} = electron;
 
             const slideOutButton = $(".button-collapse");
             slideOutButton.sideNav();
-            slideOutButton.on("click", function(){
+            slideOutButton.on("click", function () {
                 ipcRenderer.send("slideOut:open");
             });
 
@@ -197,36 +200,42 @@
                     clear: 'Clear',
                     close: 'Ok',
                     closeOnSelect: false // Close upon selecting a date,
-                  });
+                });
 
                 const addProjectModal = $('#addProjectModal');
-                
+
                 $('#addProjectButton').on('click', function (e) {
                     addProjectModal.modal('open');
                 });
 
                 // Saving new projects
-                $('#saveProjectButton').on('click', function(e) {
+                $('#saveProjectButton').on('click', function (e) {
                     const iProjectName = $('#iProjectName');
                     const iProjectDescription = $('#iProjectDescription');
+                    const iProjectValue = $('#iProjectValue');
                     const projectName = iProjectName.val();
                     const projectDescription = iProjectDescription.val();
+                    const projectValue = iProjectValue.val();
 
                     if (projectName.trim() === '') {
                         return;
                     }
 
-                    ipcRenderer.send('project:add', {'name': projectName, 'description': projectDescription});
+                    ipcRenderer.send('project:add', {
+                        'name': projectName,
+                        'description': projectDescription,
+                        'value': projectValue
+                    });
 
                     addProjectModal.modal('close');
                     iProjectName.val(null);
                     iProjectDescription.val(null);
+                    iProjectValue.val(null);
                     iProjectDescription.trigger('autoresize');
                 });
 
                 // Saving new deposits
-                $('#addProjectDeposit').on('click', function(e) {
-                    
+                $('#addProjectDeposit').on('click', function (e) {
 
                     const iDepositValue = $('#iDeposit');
                     const iDepositDate = $('#iDepositDate');
@@ -237,13 +246,16 @@
                         return;
                     }
 
-                    ipcRenderer.send('deposit:add', {'value': depositValue, 'date': depositDate});
+                    ipcRenderer.send('deposit:add', {
+                        'value': depositValue,
+                        'date': depositDate
+                    });
 
                     $("#addDepositModal").modal('close');
                     iDepositValue.val(null);
                     iDepositDate.val(null);
                 });
-                
+
             });
 
             ipcRenderer.on('projects:fetched', (event, projects) => {
@@ -254,9 +266,8 @@
                 projectsUl.html("");
                 projectsUl.append(projectsHeader);
                 projects.forEach((project) => {
-                    const li = $('<li></li>')
-                        .append('<a class="waves-effect project-item" role="button">'+ project.name +'</a>');
-                    
+                    const li = $('<li></li>').append('<a class="waves-effect project-item" role="button">' + project.name + '</a>');
+
                     // Catch click on a project
                     li.on("click", (event) => {
                         ipcRenderer.send("project:selected", project);
@@ -272,11 +283,11 @@
                 project.deposits.forEach((deposit) => {
                     const tr = $("<tr></tr>")
                     tr.append("<td>€ " + deposit.value.toFixed(2) + "</td>");
-                    tr.append("<td>" + (new Date(deposit.deposit_date)).toLocaleDateString() + "</td>");
+                    tr.append("<td>" + (
+                    new Date(deposit.deposit_date)).toLocaleDateString() + "</td>");
                     $("#deposits-table tbody").append(tr);
                 });
             });
-
         </script>
     </body>
 
