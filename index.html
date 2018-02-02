@@ -171,16 +171,21 @@
 
                 // Saving new projects
                 $('#saveProjectButton').on('click', function(e) {
-                    const projectName = $('#iProjectName').val();
-                    const projectDescription = $('#iProjectDescription').val();
+                    const iProjectName = $('#iProjectName');
+                    const iProjectDescription = $('#iProjectDescription');
+                    const projectName = iProjectName.val();
+                    const projectDescription = iProjectDescription.val();
 
                     if (projectName.trim() === '') {
                         return;
                     }
-                    
+
                     ipcRenderer.send('project:add', {'name': projectName, 'description': projectDescription});
 
                     addProjectModal.modal('close');
+                    iProjectName.val(null);
+                    iProjectDescription.val(null);
+                    iProjectDescription.trigger('autoresize');
                 });
 
 
