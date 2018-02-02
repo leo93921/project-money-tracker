@@ -91,15 +91,43 @@
                 </div>
             </div>
             <div class="fixed-action-btn horizontal click-to-toggle">
-                <a class="btn-floating btn-large red waves-effect waves-light">
-                  <i class="material-icons">add</i>
+                <a id="addProjectButton" class="btn-floating btn-large red waves-effect waves-light">
+                    <i class="material-icons">add</i>
                 </a>
-              </div>
+            </div>
+        </div>
+
+        <!-- Modal Structure -->
+        <div id="addProjectModal" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <h4>Create a new Project</h4>
+                <div class="row">
+                    <form class="col s12">
+                        <div class="row">
+                            <div class="col s12 input-field">
+                                <input type="text" id="iProjectName">
+                                <label for="iProjectName">Project Name</label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <textarea id="iProjectDescription" class="materialize-textarea"></textarea>
+                                <label for="iProjectDescription">Description</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a role="button" id="saveProjectButton" class="modal-action modal-close waves-effect waves-green btn-flat">Create</a>
+            </div>
         </div>
 
         <script>
             // You can also require other files to run in this process
-            require('./renderer.js')
+            require('./renderer.js');
+            const electron = require('electron')
+            const { ipcRenderer } = electron;
 
             $(".button-collapse").sideNav();
 
@@ -130,6 +158,32 @@
                     ]
                 },
                 options: {}
+            });
+
+            $(document).ready(function () {
+                $('.modal').modal();
+
+                const addProjectModal = $('#addProjectModal');
+                
+                $('#addProjectButton').on('click', function (e) {
+                    addProjectModal.modal('open');
+                });
+
+                // Saving new projects
+                $('#saveProjectButton').on('click', function(e) {
+                    const projectName = $('#iProjectName').val();
+                    const projectDescription = $('#iProjectDescription').val();
+
+                    if (projectName.trim() === '') {
+                        return;
+                    }
+                    
+                    ipcRenderer.send('project:add', {'name': projectName, 'description': projectDescription});
+
+                    addProjectModal.modal('close');
+                });
+
+
             });
         </script>
     </body>

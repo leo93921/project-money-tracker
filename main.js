@@ -3,6 +3,7 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database("./db.pmt.sqlite")
 // Module to control application life.
 const app = electron.app
+const { ipcMain } = electron;
 // Module to create native browser window.
 const BrowserWindow = electron.BrowserWindow
 
@@ -71,3 +72,8 @@ function createTables() {
   db.run(sql_main_table);
 
 }
+
+// Catch project:add
+ipcMain.on('project:add', function(event, obj) {
+  db.run("INSERT INTO project(name, description) VALUES (?, ?)", [obj.name, obj.description]);
+});
