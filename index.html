@@ -13,7 +13,7 @@
 
     <body>
         <ul id="slide-out" class="side-nav">
-            <li>
+            <li class="side-nav-header">
                 <div class="user-view">
                     <div class="background">
                         <img src="./assets/images/user_backgroud.jpg">
@@ -26,11 +26,8 @@
                     </a>
                 </div>
             </li>
-            <li>
+            <li class="project-item">
                 <a class="waves-effect" href="#!">Project name</a>
-            </li>
-            <li>
-                <a class="waves-effect" href="#!">Another project</a>
             </li>
         </ul>
         <nav class="light-blue darken-1">
@@ -129,7 +126,11 @@
             const electron = require('electron')
             const { ipcRenderer } = electron;
 
-            $(".button-collapse").sideNav();
+            const slideOutButton = $(".button-collapse");
+            slideOutButton.sideNav();
+            slideOutButton.on("click", function(){
+                ipcRenderer.send("slideOut:open");
+            });
 
             var ctx = document.getElementById("costsCanvas").getContext('2d');
             var myChart = new Chart(ctx, {
@@ -187,9 +188,22 @@
                     iProjectDescription.val(null);
                     iProjectDescription.trigger('autoresize');
                 });
-
-
             });
+
+            ipcRenderer.on('projects:fetched', (event, projects) => {
+
+                const projectsUl = $("ul#slide-out.side-nav");
+                const projectsHeader = $("ul#slide-out li.side-nav-header");
+
+                projectsUl.html("");
+                projectsUl.append(projectsHeader);
+                projects.forEach((project) => {
+                    const li = $('<li class="project-item"></li>')
+                        .append('<a class="waves-effect" role="button">'+ project.name +'</a>');
+                    projectsUl.append(li);
+                });
+            });
+            
         </script>
     </body>
 

@@ -14,9 +14,12 @@ const url = require('url')
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
+// Array of projects
+let projects = [];
+
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600})
+  mainWindow = new BrowserWindow({width: 1000, height: 600})
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -74,6 +77,22 @@ function createTables() {
 }
 
 // Catch project:add
-ipcMain.on('project:add', function(event, obj) {
+ipcMain.on('project:add', (event, obj) => {
   db.run("INSERT INTO project(name, description) VALUES (?, ?)", [obj.name, obj.description]);
 });
+
+// Catch slideOut:open
+ipcMain.on('slideOut:open', (event) => {
+
+  projects.splice(0, projects.length);
+
+  db.each("SELECT * FROM project", [], (error, row) => {
+    projects.push(row);
+  }, (e, count) => {
+    if (count > 0) {
+      event.sender.send('projects:fetched', projects);
+    }
+  });
+
+  
+})
