@@ -93,6 +93,11 @@ ipcMain.on('slideOut:open', (event) => {
       event.sender.send('projects:fetched', projects);
     }
   });
-
-  
 })
+
+// Catch project:selected
+ipcMain.on('project:selected', (event, project) => {
+
+  event.sender.send("project:selected:fetched", project)
+  
+});

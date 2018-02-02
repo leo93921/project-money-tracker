@@ -27,12 +27,12 @@
                 </div>
             </li>
             <li class="project-item">
-                <a class="waves-effect" href="#!">Project name</a>
+                <a class="waves-effect" role="button">Project name</a>
             </li>
         </ul>
         <nav class="light-blue darken-1">
             <div class="nav-wrapper">
-                <a href="#" class="brand-logo center">Project name</a>
+                <a href="#" class="brand-logo center" id="project-name">Project name</a>
                 <a href="#" data-activates="slide-out" class="button-collapse show-on-large show-on-medium show-on-small">
                     <i class="material-icons">menu</i>
                 </a>
@@ -46,7 +46,7 @@
                         <h5>
                             Descrizione
                         </h5>
-                        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus sed reiciendis ullam rem, laudantium libero consequatur nemo necessitatibus error illo earum expedita id magnam! Quae nulla saepe deleniti nam et expedita laborum labore similique quod beatae eos unde dolore provident tempora, consequatur esse voluptatem quas sunt reiciendis est delectus quisquam rem. Ullam voluptatum doloremque in unde repellendus? Neque saepe accusamus facilis culpa repellat ut dolores commodi iusto inventore amet blanditiis praesentium velit, aperiam harum pariatur error, numquam mollitia corporis. Aspernatur numquam quis dolore at! Animi amet ipsum eligendi omnis sequi nam voluptate nisi rem, velit quia neque maxime, et vero?</p>
+                        <p id="project-description">Lorem ipsum dolor sit amet consectetur adipisicing elit. Delectus sed reiciendis ullam rem, laudantium libero consequatur nemo necessitatibus error illo earum expedita id magnam! Quae nulla saepe deleniti nam et expedita laborum labore similique quod beatae eos unde dolore provident tempora, consequatur esse voluptatem quas sunt reiciendis est delectus quisquam rem. Ullam voluptatum doloremque in unde repellendus? Neque saepe accusamus facilis culpa repellat ut dolores commodi iusto inventore amet blanditiis praesentium velit, aperiam harum pariatur error, numquam mollitia corporis. Aspernatur numquam quis dolore at! Animi amet ipsum eligendi omnis sequi nam voluptate nisi rem, velit quia neque maxime, et vero?</p>
                     </div>
                 </div>
             </div>
@@ -198,12 +198,22 @@
                 projectsUl.html("");
                 projectsUl.append(projectsHeader);
                 projects.forEach((project) => {
-                    const li = $('<li class="project-item"></li>')
-                        .append('<a class="waves-effect" role="button">'+ project.name +'</a>');
+                    const li = $('<li></li>')
+                        .append('<a class="waves-effect project-item" role="button">'+ project.name +'</a>');
+                    
+                    // Catch click on a project
+                    li.on("click", (event) => {
+                        ipcRenderer.send("project:selected", project);
+                    });
                     projectsUl.append(li);
                 });
             });
-            
+
+            ipcRenderer.on("project:selected:fetched", (event, project) => {
+                $("#project-name").text(project.name);
+                $("#project-description").text(project.description);
+            });
+
         </script>
     </body>
 
