@@ -271,8 +271,8 @@
                 $("#deposits-table tbody").html("");
                 project.deposits.forEach((deposit) => {
                     const tr = $("<tr></tr>")
-                    tr.append("<td>" + deposit.value + "</td>");
-                    tr.append("<td>" + deposit.deposit_date + "</td>");
+                    tr.append("<td>€ " + deposit.value.toFixed(2) + "</td>");
+                    tr.append("<td>" + (new Date(deposit.deposit_date)).toLocaleDateString() + "</td>");
                     $("#deposits-table tbody").append(tr);
                 });
             });

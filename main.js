@@ -120,6 +120,7 @@ function fetchProject(event) {
   deposits.splice(0, deposits.length);
 
   db.each("SELECT * FROM deposit WHERE project_id = ?", [selectedProject.id], (error, row) => {
+    row.deposit_date = new Date(row.deposit_date);
     deposits.push(row);
   }, (error, count) => {
     aProject.deposits = deposits;
