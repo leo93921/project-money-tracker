@@ -16,10 +16,12 @@ let mainWindow
 
 // Array of projects
 let projects = [];
+let selectedProject;
+let deposits = [];
 
-function createWindow () {
+function createWindow() {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1000, height: 600})
+  mainWindow = new BrowserWindow({ width: 1000, height: 600 })
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -71,9 +73,10 @@ app.on('activate', function () {
 function createTables() {
   // No error: create table
   sql_main_table = 'CREATE TABLE IF NOT EXISTS project (id INTEGER PRIMARY KEY, name TEXT, description TEXT)';
+  sql_deposit_table = 'CREATE TABLE IF NOT EXISTS deposit (id INTEGER PRIMARY KEY, project_id INTEGER NOT NULL, value NUMBER, deposit_date DATE)';
 
   db.run(sql_main_table);
-
+  db.run(sql_deposit_table);
 }
 
 // Catch project:add
@@ -97,7 +100,26 @@ ipcMain.on('slideOut:open', (event) => {
 
 // Catch project:selected
 ipcMain.on('project:selected', (event, project) => {
-
+  selectedProject = project;
   event.sender.send("project:selected:fetched", project)
-  
+
+});
+
+// Catch deposit:add
+ipcMain.on('deposit:add', (event, deposit) => {
+  // Empty the array
+  deposits.splice(0, deposits.length);
+
+  db.serialize(function () {
+    db.run(
+      "INSERT INTO deposit(project_id, value, deposit_date) VALUES(?, ?, ?)",
+      [selectedProject.id, deposit.value, deposit.date]);
+    db.each("SELECT * FROM deposit WHERE project_id = ?", [selectedProject.id], (error, row) => {
+      deposits.push(row);
+    }, (error, count) => {
+      if (count > 0) {
+        event.sender.send("deposit:fetched", deposits);
+      }
+    });
+  });
 });
