@@ -1,30 +1,27 @@
-const electron = require('electron')
-const sqlite3 = require('sqlite3').verbose();
-const db = new sqlite3.Database("./db.pmt.sqlite")
-// Module to control application life.
-const app = electron.app
-const { ipcMain, TouchBar, BrowserWindow } = electron;
-const { TouchBarButton } = TouchBar;
+import {ipcMain, TouchBar, BrowserWindow, app, TouchBarButton } from 'electron';
+import * as path from 'path';
+import * as url from 'url';
+import { Database } from 'sqlite3';
 
-const path = require('path')
-const url = require('url')
+const db = new Database("./db.pmt.sqlite")
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow
+let mainWindow: BrowserWindow;
 
 // Array of projects
-let projects = [];
-let selectedProject;
-let deposits = [];
+let projects: any[] = [];
+let selectedProject: any;
+let deposits: any[] = [];
 
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({ width: 1000, height: 600 })
-
+  console.log(__dirname);
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, 'index.html'),
+    
+    pathname: path.join(__dirname, '../index.html'),
     protocol: 'file:',
     slashes: true
   }))
@@ -82,7 +79,7 @@ function createTables() {
 }
 
 // Catch project:add
-ipcMain.on('project:add', (event, obj) => {
+ipcMain.on('project:add', (event: any, obj: any) => {
   db.run(
     "INSERT INTO project(name, description, to_give) VALUES (?, ?, ?)", 
     [obj.name, obj.description, obj.value]
@@ -90,7 +87,7 @@ ipcMain.on('project:add', (event, obj) => {
 });
 
 // Catch slideOut:open
-ipcMain.on('slideOut:open', (event) => {
+ipcMain.on('slideOut:open', (event: any) => {
 
   projects.splice(0, projects.length);
 
@@ -104,32 +101,33 @@ ipcMain.on('slideOut:open', (event) => {
 })
 
 // Catch project:selected
-ipcMain.on('project:selected', (event, project) => {
+ipcMain.on('project:selected', (event: any, project: any) => {
   selectedProject = project;
   fetchProject(null, event);
 });
 
 // Catch deposit:add
-ipcMain.on('deposit:add', (event, deposit) => {
+ipcMain.on('deposit:add', (event: any, deposit: any) => {
   db.run(
     "INSERT INTO deposit(project_id, value, deposit_date) VALUES(?, ?, ?)",
     [selectedProject.id, deposit.value, deposit.date],
-    (error) => fetchProject(error, event)
+    (result: any, error: any) => fetchProject(error, event)
   );
 });
 
-function fetchProject(error, event) {
+function fetchProject(error: any, event: any) {
 
-  if (error !== null) {return;}
-  let aProject: any;
+  if (error != null ) {return;}
+  let aProject: any = {};
 
   // Empty the array
   deposits.splice(0, deposits.length);
 
-  db.each("SELECT * FROM deposit WHERE project_id = ?", [selectedProject.id], (error, row) => {
+  db.each("SELECT * FROM deposit WHERE project_id = ?", [selectedProject.id], (error: any, row: any) => {
     row.deposit_date = new Date(row.deposit_date);
     deposits.push(row);
-  }, (error, count) => {
+  }, (error: any, count: any) => {
+    debugger;
     aProject.deposits = deposits;
     aProject.name = selectedProject.name;
     aProject.description = selectedProject.description;
@@ -139,12 +137,13 @@ function fetchProject(error, event) {
 }
 
 // Touchbar for MacOS
-  let newProjectButton = new TouchBarButton({
-    label: 'New Project'
-  });
+  //let newProjectButton: TouchBarButton = new TouchBarButton({label: 'New Project'});
+  //let newProjectButton = new TouchBarButton({
+  //  label: 'New Project'
+  //});
 
   let touchBar = new TouchBar({
     items: [
-      newProjectButton
+      //newProjectButton
     ]
   });
