@@ -279,6 +279,9 @@
             ipcRenderer.on("project:selected:fetched", (event, project) => {
                 $("#project-name").text(project.name);
                 $("#project-description").text(project.description);
+                
+                // fill table with deposits
+                let totalDeposit = 0;
                 $("#deposits-table tbody").html("");
                 project.deposits.forEach((deposit) => {
                     const tr = $("<tr></tr>")
@@ -286,7 +289,14 @@
                     tr.append("<td>" + (
                     new Date(deposit.deposit_date)).toLocaleDateString() + "</td>");
                     $("#deposits-table tbody").append(tr);
+                    totalDeposit = totalDeposit + deposit.value;
                 });
+
+                // Modify the graph
+                myChart.data.datasets[0].data[0] = totalDeposit;
+                myChart.data.datasets[0].data[1] = project.totalValue - totalDeposit;
+                myChart.update();
+                
             });
         </script>
     </body>

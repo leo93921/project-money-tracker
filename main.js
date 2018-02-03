@@ -104,7 +104,7 @@ ipcMain.on('slideOut:open', (event) => {
 // Catch project:selected
 ipcMain.on('project:selected', (event, project) => {
   selectedProject = project;
-  fetchProject(event);
+  fetchProject(null, event);
 });
 
 // Catch deposit:add
@@ -112,11 +112,13 @@ ipcMain.on('deposit:add', (event, deposit) => {
   db.run(
     "INSERT INTO deposit(project_id, value, deposit_date) VALUES(?, ?, ?)",
     [selectedProject.id, deposit.value, deposit.date],
-    fetchProject(event)
+    (error) => fetchProject(error, event)
   );
 });
 
-function fetchProject(event) {
+function fetchProject(error, event) {
+
+  if (error !== null) {return;}
   let aProject = {};
 
   // Empty the array
@@ -129,7 +131,7 @@ function fetchProject(event) {
     aProject.deposits = deposits;
     aProject.name = selectedProject.name;
     aProject.description = selectedProject.description;
-    
+    aProject.totalValue = selectedProject.to_give;
     event.sender.send("project:selected:fetched", aProject);
   });
 }
