@@ -74,8 +74,8 @@ app.on('activate', function () {
 // code. You can also put them in separate files and require them here.
 function createTables() {
   // No error: create table
-  sql_main_table = 'CREATE TABLE IF NOT EXISTS project (id INTEGER PRIMARY KEY, name TEXT, description TEXT, to_give NUMBER NOT NULL)';
-  sql_deposit_table = 'CREATE TABLE IF NOT EXISTS deposit (id INTEGER PRIMARY KEY, project_id INTEGER NOT NULL, value NUMBER, deposit_date DATE)';
+  const sql_main_table = 'CREATE TABLE IF NOT EXISTS project (id INTEGER PRIMARY KEY, name TEXT, description TEXT, to_give NUMBER NOT NULL)';
+  const sql_deposit_table = 'CREATE TABLE IF NOT EXISTS deposit (id INTEGER PRIMARY KEY, project_id INTEGER NOT NULL, value NUMBER, deposit_date DATE)';
 
   db.run(sql_main_table);
   db.run(sql_deposit_table);
@@ -121,7 +121,7 @@ ipcMain.on('deposit:add', (event, deposit) => {
 function fetchProject(error, event) {
 
   if (error !== null) {return;}
-  let aProject = {};
+  let aProject: any;
 
   // Empty the array
   deposits.splice(0, deposits.length);
