@@ -3,9 +3,8 @@ const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database("./db.pmt.sqlite")
 // Module to control application life.
 const app = electron.app
-const { ipcMain } = electron;
-// Module to create native browser window.
-const BrowserWindow = electron.BrowserWindow
+const { ipcMain, TouchBar, BrowserWindow } = electron;
+const { TouchBarButton } = TouchBar;
 
 const path = require('path')
 const url = require('url')
@@ -45,6 +44,9 @@ function createWindow() {
 function init() {
   createWindow();
   createTables();
+  if (process.platform == 'darwin') {
+    mainWindow.setTouchBar(touchBar);
+  }
 }
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -135,3 +137,14 @@ function fetchProject(error, event) {
     event.sender.send("project:selected:fetched", aProject);
   });
 }
+
+// Touchbar for MacOS
+  let newProjectButton = new TouchBarButton({
+    label: 'New Project'
+  });
+
+  let touchBar = new TouchBar({
+    items: [
+      newProjectButton
+    ]
+  });
