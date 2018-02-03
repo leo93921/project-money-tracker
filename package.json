@@ -2,7 +2,7 @@
   "name": "project-money-tracker",
   "version": "1.0.0",
   "description": "A simple Electron application for managing money from projects",
-  "main": "main.js",
+  "main": "main.ts",
   "scripts": {
     "start": "electron ."
   },
