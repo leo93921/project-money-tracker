@@ -346,6 +346,7 @@
                     // fill table with deposits
                     let totalDeposit = 0;
                     $("#deposits-table tbody").html("");
+                    if (project.deposits.length > 0) {
                     project.deposits.forEach((deposit) => {
                         const tr = $("<tr></tr>")
                         tr.append("<td>€ " + deposit.value.toFixed(2) + "</td>");
@@ -354,6 +355,11 @@
                         $("#deposits-table tbody").append(tr);
                         totalDeposit = totalDeposit + deposit.value;
                     });
+                } else {
+                    const tr = $("<tr></tr>")
+                    tr.append('<td colspan="2">No deposit saved. Press the button below to add one.</td>');
+                    $("#deposits-table tbody").append(tr);
+                }
 
                     // Modify the graph
                     myChart.data.datasets[0].data[0] = totalDeposit;
