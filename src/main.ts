@@ -1,9 +1,10 @@
-import { ipcMain, BrowserWindow, app } from 'electron';
+import { ipcMain, BrowserWindow, app, Menu, shell } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import { Database } from 'sqlite3';
 
 const db = new Database("./db.pmt.sqlite")
+process.env.production = false;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -23,6 +24,9 @@ function createWindow() {
     protocol: 'file:',
     slashes: true
   }))
+
+  const menu = Menu.buildFromTemplate(template);
+  Menu.setApplicationMenu(menu);
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
@@ -130,8 +134,8 @@ ipcMain.on('btn:removeProject', (event: any) => {
   db.serialize(() => {
     db.parallelize(() => {
       db.run("DELETE FROM project WHERE id = ?", [selectedProject.id]),
-      db.run("DELETE FROM deposit WHERE project_id = ?", [selectedProject.id]),
-      refreshProjects(event)
+        db.run("DELETE FROM deposit WHERE project_id = ?", [selectedProject.id]),
+        refreshProjects(event)
     });
   })
 
@@ -160,4 +164,93 @@ function refreshProjects(event: any) {
       return;
     }
   });
+}
+
+const template: any = [
+  {
+    label: 'Edit',
+    submenu: [
+      { role: 'undo' },
+      { role: 'redo' },
+      { type: 'separator' },
+      { role: 'cut' },
+      { role: 'copy' },
+      { role: 'paste' },
+      { role: 'pasteandmatchstyle' },
+      { role: 'delete' },
+      { role: 'selectall' }
+    ]
+  },
+  {
+    label: 'View',
+    submenu: [
+      { role: 'reload' },
+      { role: 'forcereload' },
+      { role: 'toggledevtools' },
+      { type: 'separator' },
+      { role: 'resetzoom' },
+      { role: 'zoomin' },
+      { role: 'zoomout' },
+      { type: 'separator' },
+      { role: 'togglefullscreen' }
+    ]
+  },
+  {
+    role: 'window',
+    submenu: [
+      { role: 'minimize' },
+      { role: 'close' }
+    ]
+  },
+  {
+    role: 'help',
+    submenu: [
+      {
+        label: 'Learn More',
+        click() { shell.openExternal('https://elsi.me/project-money-tracker') }
+      }
+    ]
+  }
+]
+
+if (process.platform === 'darwin') {
+  template.unshift({
+    label: app.getName(),
+    submenu: [
+      { role: 'about' },
+      { type: 'separator' },
+      { role: 'services', submenu: [] },
+      { type: 'separator' },
+      { role: 'hide' },
+      { role: 'hideothers' },
+      { role: 'unhide' },
+      { type: 'separator' },
+      { role: 'quit' }
+    ]
+  });
+
+  // Edit menu
+  template[1].submenu.push(
+    { type: 'separator' },
+    {
+      label: 'Speech',
+      submenu: [
+        { role: 'startspeaking' },
+        { role: 'stopspeaking' }
+      ]
+    }
+  );
+
+  if (process.env.production === true) {
+    template[2].submenu.splice(2, 1);
+  }
+
+  // Window menu
+  template[3].submenu = [
+    { role: 'close' },
+    { role: 'minimize' },
+    { role: 'zoom' },
+    { type: 'separator' },
+    { role: 'front' }
+  ]
 }
