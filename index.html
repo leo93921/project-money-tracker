@@ -19,10 +19,10 @@
                         <img src="./assets/images/user_backgroud.jpg">
                     </div>
                     <a href="#!name">
-                        <span class="white-text name">John Doe</span>
+                        <span class="white-text name">Leonardo Capoccia</span>
                     </a>
                     <a href="#!email">
-                        <span class="white-text email">&nbsp;</span>
+                        <span class="white-text email">leonardo.capoccia@hotmail.it</span>
                     </a>
                 </div>
             </li>
@@ -87,10 +87,22 @@
                     </div>
                 </div>
             </div>
-            <div class="fixed-action-btn horizontal click-to-toggle">
-                <a id="addProjectButton" class="btn-floating btn-large red waves-effect waves-light">
-                    <i class="material-icons">add</i>
+            <div class="fixed-action-btn horizontal">
+                <a class="btn-floating btn-large  green accent-4 waves-effect waves-light">
+                    <i class="material-icons">more_vert</i>
                 </a>
+                <ul>
+                    <li>
+                        <a class="btn-floating blue" id="addProjectButton">
+                            <i class="material-icons">add</i>
+                        </a>
+                    </li>
+                    <li>
+                        <a class="btn-floating modal-trigger red darken-1" href="#removeProjectModal">
+                            <i class="material-icons">delete</i>
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
 
@@ -150,6 +162,18 @@
             </div>
         </div>
 
+        <div id="removeProjectModal" class="modal">
+            <div class="modal-content">
+              <h4>Are you sure?</h4>
+              <p>Are you sure you want to delete this project? It is an action that cannot be undone!</p>
+            </div>
+            <div class="modal-footer">
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat red-text darken-1-text" onclick="deleteProjectPress()">Yes, I'm sure!</a>
+                <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat modal-close">No, I'm not!</a>
+            </div>
+          </div>
+                  
+
         <script>
             // You can also require other files to run in this process
             require('./dist/renderer.js');
@@ -205,7 +229,7 @@
                 const addProjectModal = $('#addProjectModal');
 
                 $('#addProjectButton').on('click', function (e) {
-                    addProjectModal.modal('open');
+                    addProjectModal.modal("open");
                 });
 
                 // Saving new projects
@@ -258,6 +282,10 @@
 
             });
 
+            function deleteProjectPress() {
+                ipcRenderer.send('btn:removeProject');
+            }
+
             ipcRenderer.on('projects:fetched', (event, projects) => {
 
                 const projectsUl = $("ul#slide-out.side-nav");
@@ -265,9 +293,11 @@
 
                 projectsUl.html("");
                 projectsUl.append(projectsHeader);
+                let index = 1;
                 projects.forEach((project) => {
-                    const li = $('<li></li>').append('<a class="waves-effect project-item" role="button">' + project.name + '</a>');
-
+                    const li = $('<li></li>')
+                    const a = $('<a class="waves-effect project-item project-dropdown-' + index + '" role="button">' + project.name + '</a>');
+                    li.append(a);
                     // Catch click on a project
                     li.on("click", (event) => {
                         ipcRenderer.send("project:selected", project);
@@ -279,7 +309,7 @@
             ipcRenderer.on("project:selected:fetched", (event, project) => {
                 $("#project-name").text(project.name);
                 $("#project-description").text(project.description);
-                
+
                 // fill table with deposits
                 let totalDeposit = 0;
                 $("#deposits-table tbody").html("");
@@ -296,7 +326,7 @@
                 myChart.data.datasets[0].data[0] = totalDeposit;
                 myChart.data.datasets[0].data[1] = project.totalValue - totalDeposit;
                 myChart.update();
-                
+
             });
         </script>
     </body>

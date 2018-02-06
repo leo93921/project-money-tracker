@@ -1,4 +1,4 @@
-import {ipcMain, TouchBar, BrowserWindow, app, TouchBarButton } from 'electron';
+import { ipcMain, BrowserWindow, app } from 'electron';
 import * as path from 'path';
 import * as url from 'url';
 import { Database } from 'sqlite3';
@@ -17,10 +17,8 @@ let deposits: any[] = [];
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({ width: 1000, height: 600 })
-  console.log(__dirname);
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
-    
     pathname: path.join(__dirname, '../index.html'),
     protocol: 'file:',
     slashes: true
@@ -41,9 +39,6 @@ function createWindow() {
 function init() {
   createWindow();
   createTables();
-  if (process.platform == 'darwin') {
-    mainWindow.setTouchBar(touchBar);
-  }
 }
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -81,7 +76,7 @@ function createTables() {
 // Catch project:add
 ipcMain.on('project:add', (event: any, obj: any) => {
   db.run(
-    "INSERT INTO project(name, description, to_give) VALUES (?, ?, ?)", 
+    "INSERT INTO project(name, description, to_give) VALUES (?, ?, ?)",
     [obj.name, obj.description, obj.value]
   );
 });
@@ -117,7 +112,7 @@ ipcMain.on('deposit:add', (event: any, deposit: any) => {
 
 function fetchProject(error: any, event: any) {
 
-  if (error != null ) {return;}
+  if (error != null) { return; }
   let aProject: any = {};
 
   // Empty the array
@@ -127,7 +122,6 @@ function fetchProject(error: any, event: any) {
     row.deposit_date = new Date(row.deposit_date);
     deposits.push(row);
   }, (error: any, count: any) => {
-    debugger;
     aProject.deposits = deposits;
     aProject.name = selectedProject.name;
     aProject.description = selectedProject.description;
@@ -136,14 +130,19 @@ function fetchProject(error: any, event: any) {
   });
 }
 
-// Touchbar for MacOS
-  //let newProjectButton: TouchBarButton = new TouchBarButton({label: 'New Project'});
-  //let newProjectButton = new TouchBarButton({
-  //  label: 'New Project'
-  //});
-
-  let touchBar = new TouchBar({
-    items: [
-      //newProjectButton
-    ]
+ipcMain.on('btn:removeProject', (event: any) => {
+  db.parallelize(() => {
+    db.run("DELETE FROM project WHERE id = ?", [selectedProject.id]),
+      db.run("DELETE FROM deposit WHERE project_id = ?", [selectedProject.id])
   });
+  projects.forEach((project: any, index: number) => {
+    if (project.id === selectedProject.id) {
+      projects.splice(index, 1);
+      if (projects.length > 0) {
+        selectedProject = projects[0];
+      }
+      fetchProject(null, event);
+      return;
+    }
+  });
+});
