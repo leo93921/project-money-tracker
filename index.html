@@ -9,6 +9,17 @@
         <script src="./node_modules/materialize-css/js/hammer.min.js" onload="window.Hammer = module.exports;"></script>
         <script src="./node_modules/materialize-css/dist/js/materialize.min.js"></script>
         <script src="./node_modules/chart.js/dist/Chart.bundle.min.js"></script>
+        <style>
+            .overlay {
+                width: 100%;
+                height: 100%;
+                z-index: 996;
+                position: fixed;
+            }
+            nav {
+                z-index: 997;
+            }
+        </style>
     </head>
 
     <body>
@@ -26,18 +37,35 @@
                     </a>
                 </div>
             </li>
-            <li class="project-item">
-                <a class="waves-effect" role="button">Project name</a>
-            </li>
         </ul>
         <nav class="light-blue darken-1">
             <div class="nav-wrapper">
-                <a href="#" class="brand-logo center" id="project-name">Project name</a>
+                <a href="#" class="brand-logo center" id="project-name">Project Money Tracker</a>
                 <a href="#" data-activates="slide-out" class="button-collapse show-on-large show-on-medium show-on-small">
                     <i class="material-icons">menu</i>
                 </a>
             </div>
         </nav>
+
+        <div class="overlay white valign-wrapper">
+            <div class="container">
+                <div class="row">
+                    <div class="col s12 center-align">
+                        <div>
+                            <h5 class="flow-text blue-text">Welcome on board</h5>
+                            <p class="grey-text">
+                                Hi! Welcome to this utility. You can add a new project with the floating button under this text.
+                                <br>
+                                Using that botton, you can delete a project too.
+                            </p>
+                            <p class="grey-text">You can access the created project by pressing on the menu icon in the header.</p>
+                            <p class="grey-text">Try to add a new project now, it is simpler than as it seems.</p>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="container">
             <div class="section">
@@ -87,7 +115,7 @@
                     </div>
                 </div>
             </div>
-            <div class="fixed-action-btn horizontal">
+            <div class="fixed-action-btn horizontal" id="common-actions">
                 <a class="btn-floating btn-large  green accent-4 waves-effect waves-light">
                     <i class="material-icons">more_vert</i>
                 </a>
@@ -164,15 +192,14 @@
 
         <div id="removeProjectModal" class="modal">
             <div class="modal-content">
-              <h4>Are you sure?</h4>
-              <p>Are you sure you want to delete this project? It is an action that cannot be undone!</p>
+                <h4>Are you sure?</h4>
+                <p>Are you sure you want to delete this project? It is an action that cannot be undone!</p>
             </div>
             <div class="modal-footer">
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat red-text darken-1-text" onclick="deleteProjectPress()">Yes, I'm sure!</a>
                 <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat modal-close">No, I'm not!</a>
             </div>
-          </div>
-                  
+        </div>
 
         <script>
             // You can also require other files to run in this process
@@ -307,26 +334,35 @@
             });
 
             ipcRenderer.on("project:selected:fetched", (event, project) => {
-                $("#project-name").text(project.name);
-                $("#project-description").text(project.description);
 
-                // fill table with deposits
-                let totalDeposit = 0;
-                $("#deposits-table tbody").html("");
-                project.deposits.forEach((deposit) => {
-                    const tr = $("<tr></tr>")
-                    tr.append("<td>€ " + deposit.value.toFixed(2) + "</td>");
-                    tr.append("<td>" + (
-                    new Date(deposit.deposit_date)).toLocaleDateString() + "</td>");
-                    $("#deposits-table tbody").append(tr);
-                    totalDeposit = totalDeposit + deposit.value;
-                });
+                $("#project-name").text((project === null) ? "Project Money Tracker" : project.name);
 
-                // Modify the graph
-                myChart.data.datasets[0].data[0] = totalDeposit;
-                myChart.data.datasets[0].data[1] = project.totalValue - totalDeposit;
-                myChart.update();
+                if (project !== null) {
+                    $('.overlay').hide();
+                    $("#project-description").text(project.description);
 
+                    // fill table with deposits
+                    let totalDeposit = 0;
+                    $("#deposits-table tbody").html("");
+                    project.deposits.forEach((deposit) => {
+                        const tr = $("<tr></tr>")
+                        tr.append("<td>€ " + deposit.value.toFixed(2) + "</td>");
+                        tr.append("<td>" + (
+                        new Date(deposit.deposit_date)).toLocaleDateString() + "</td>");
+                        $("#deposits-table tbody").append(tr);
+                        totalDeposit = totalDeposit + deposit.value;
+                    });
+
+                    // Modify the graph
+                    myChart.data.datasets[0].data[0] = totalDeposit;
+                    myChart.data.datasets[0].data[1] = project.totalValue - totalDeposit;
+                    myChart.update();
+
+                    slideOutButton.sideNav("hide");
+                } else {
+                    // No project present
+                    $('.overlay').show();
+                }
             });
         </script>
     </body>

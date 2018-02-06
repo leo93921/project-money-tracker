@@ -77,22 +77,14 @@ function createTables() {
 ipcMain.on('project:add', (event: any, obj: any) => {
   db.run(
     "INSERT INTO project(name, description, to_give) VALUES (?, ?, ?)",
-    [obj.name, obj.description, obj.value]
+    [obj.name, obj.description, obj.value],
+    fetchProjects(event)
   );
 });
 
 // Catch slideOut:open
 ipcMain.on('slideOut:open', (event: any) => {
-
-  projects.splice(0, projects.length);
-
-  db.each("SELECT * FROM project", [], (error, row) => {
-    projects.push(row);
-  }, (e, count) => {
-    if (count > 0) {
-      event.sender.send('projects:fetched', projects);
-    }
-  });
+  fetchProjects(event);
 })
 
 // Catch project:selected
@@ -118,16 +110,20 @@ function fetchProject(error: any, event: any) {
   // Empty the array
   deposits.splice(0, deposits.length);
 
-  db.each("SELECT * FROM deposit WHERE project_id = ?", [selectedProject.id], (error: any, row: any) => {
-    row.deposit_date = new Date(row.deposit_date);
-    deposits.push(row);
-  }, (error: any, count: any) => {
-    aProject.deposits = deposits;
-    aProject.name = selectedProject.name;
-    aProject.description = selectedProject.description;
-    aProject.totalValue = selectedProject.to_give;
-    event.sender.send("project:selected:fetched", aProject);
-  });
+  if (selectedProject !== null) {
+    db.each("SELECT * FROM deposit WHERE project_id = ?", [selectedProject.id], (error: any, row: any) => {
+      row.deposit_date = new Date(row.deposit_date);
+      deposits.push(row);
+    }, (error: any, count: any) => {
+      aProject.deposits = deposits;
+      aProject.name = selectedProject.name;
+      aProject.description = selectedProject.description;
+      aProject.totalValue = selectedProject.to_give;
+      event.sender.send("project:selected:fetched", aProject);
+    });
+  } else {
+    event.sender.send("project:selected:fetched", null);
+  }
 }
 
 ipcMain.on('btn:removeProject', (event: any) => {
@@ -140,9 +136,23 @@ ipcMain.on('btn:removeProject', (event: any) => {
       projects.splice(index, 1);
       if (projects.length > 0) {
         selectedProject = projects[0];
+      } else {
+        selectedProject = null;
       }
       fetchProject(null, event);
       return;
     }
   });
 });
+
+function fetchProjects(event: any) {
+  projects.splice(0, projects.length);
+
+  db.each("SELECT * FROM project", [], (error, row) => {
+    projects.push(row);
+  }, (e, count) => {
+    if (count > 0) {
+      event.sender.send('projects:fetched', projects);
+    }
+  });
+}
