@@ -126,7 +126,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="btn-floating modal-trigger red darken-1" href="#removeProjectModal">
+                        <a class="btn-floating modal-trigger red darken-1 hideIfNoProjects" href="#removeProjectModal">
                             <i class="material-icons">delete</i>
                         </a>
                     </li>
@@ -212,6 +212,8 @@
             slideOutButton.on("click", function () {
                 ipcRenderer.send("slideOut:open");
             });
+            const hideButtonIfNoProjects = $(".hideIfNoProjects");
+            hideButtonIfNoProjects.hide();
 
             var ctx = document.getElementById("costsCanvas").getContext('2d');
             var myChart = new Chart(ctx, {
@@ -358,10 +360,12 @@
                     myChart.data.datasets[0].data[1] = project.totalValue - totalDeposit;
                     myChart.update();
 
+                    hideButtonIfNoProjects.show();
                     slideOutButton.sideNav("hide");
                 } else {
                     // No project present
                     $('.overlay').show();
+                    hideButtonIfNoProjects.hide();
                 }
             });
         </script>

@@ -127,10 +127,27 @@ function fetchProject(error: any, event: any) {
 }
 
 ipcMain.on('btn:removeProject', (event: any) => {
-  db.parallelize(() => {
-    db.run("DELETE FROM project WHERE id = ?", [selectedProject.id]),
-      db.run("DELETE FROM deposit WHERE project_id = ?", [selectedProject.id])
+  db.serialize(() => {
+    db.parallelize(() => {
+      db.run("DELETE FROM project WHERE id = ?", [selectedProject.id]),
+      db.run("DELETE FROM deposit WHERE project_id = ?", [selectedProject.id]),
+      refreshProjects(event)
+    });
+  })
+
+});
+
+function fetchProjects(event: any) {
+  projects.splice(0, projects.length);
+
+  db.each("SELECT * FROM project", [], (error, row) => {
+    projects.push(row);
+  }, (e, count) => {
+    event.sender.send('projects:fetched', projects);
   });
+}
+
+function refreshProjects(event: any) {
   projects.forEach((project: any, index: number) => {
     if (project.id === selectedProject.id) {
       projects.splice(index, 1);
@@ -141,18 +158,6 @@ ipcMain.on('btn:removeProject', (event: any) => {
       }
       fetchProject(null, event);
       return;
-    }
-  });
-});
-
-function fetchProjects(event: any) {
-  projects.splice(0, projects.length);
-
-  db.each("SELECT * FROM project", [], (error, row) => {
-    projects.push(row);
-  }, (e, count) => {
-    if (count > 0) {
-      event.sender.send('projects:fetched', projects);
     }
   });
 }
