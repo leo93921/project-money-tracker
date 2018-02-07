@@ -1,12 +1,17 @@
 {
   "name": "project-money-tracker",
   "version": "1.0.0",
-  "description": "A simple Electron application for managing money from projects",
+  "description": "A simple application for managing money from projects",
   "scripts": {
     "build": "tsc",
     "lint": "tslint -c tslint.json -p tsconfig.json",
-    "start": "npm run build && electron --inspect=5858 ./dist/main.js"
+    "start": "npm run build && electron --inspect=5858 ./dist/main.js",
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/images/icons/icon.icns --prune=true --out=release-builds",
+    "package-win": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=win32 --arch=ia32 --icon=assets/images/icons/icon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Project Money Tracker\"",
+    "package-linux": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/images/icons/icon.ico --prune=true --out=release-builds"
   },
+  "productName": "Project Money Tracker",
+  "main": "./dist/main.js",
   "repository": "https://github.com/leo93921/project-money-tracker",
   "keywords": [],
   "author": "GitHub",
