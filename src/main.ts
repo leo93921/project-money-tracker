@@ -3,8 +3,9 @@ import * as path from 'path';
 import * as url from 'url';
 import { Database } from 'sqlite3';
 
-const db = new Database("./db.pmt.sqlite")
-process.env.production = false;
+
+const dbPath = path.resolve(__dirname, "db.pmt.sqlite");
+const db = new Database(dbPath);
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -241,9 +242,7 @@ if (process.platform === 'darwin') {
     }
   );
 
-  if (process.env.production === true) {
-    template[2].submenu.splice(2, 1);
-  }
+  template[2].submenu.splice(2, 1);
 
   // Window menu
   template[3].submenu = [
