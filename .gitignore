@@ -3,3 +3,4 @@ node_modules
 db.pmt.sqlite
 dist
 release-builds
+*.dmg
