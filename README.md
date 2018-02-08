@@ -10,7 +10,7 @@ It's possible to create projects with a given budget. After a project has been c
 
 ## Todo
 - [ ] Modify a project
-- [ ] Remove a deposit or modify it
+- [x] Remove a deposit
 - [ ] Organize project with tags
 - [ ] Mark a project as completed
 - [ ] User preferences like name and mail (Now are fixed)

@@ -19,6 +19,8 @@
             nav {
                 z-index: 997;
             }
+            .p-rigth-4px {padding-right: 4px;}
+            .col-40{width: 40%;} .col-10{width: 10%;}
         </style>
     </head>
 
@@ -85,8 +87,9 @@
                         <table class="bordered responsive-table centered" id="deposits-table">
                             <thead>
                                 <tr>
-                                    <th>Deposit</th>
-                                    <th>Date</th>
+                                    <th class="col-40">Deposit</th>
+                                    <th class="col-40">Date</th>
+                                    <th class="col-10"></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -341,12 +344,21 @@
                         tr.append("<td>€ " + deposit.value.toFixed(2) + "</td>");
                         tr.append("<td>" + (
                         new Date(deposit.deposit_date)).toLocaleDateString() + "</td>");
+                        
+                        const action = $('<a class="red-text" href="!#" role="button"><i class="material-icons">delete</i></a>');
+                        action.on('click', (event) => {
+                            event.preventDefault();
+                            ipcRenderer.send("deposit:remove", deposit.id);
+                        });
+                        const actionCell = $("<td></td>");
+                        actionCell.append(action);
+                        tr.append(actionCell);
                         $("#deposits-table tbody").append(tr);
                         totalDeposit = totalDeposit + deposit.value;
                     });
                 } else {
                     const tr = $("<tr></tr>")
-                    tr.append('<td colspan="2">No deposit saved. Press the button below to add one.</td>');
+                    tr.append('<td colspan="3">No deposit saved. Press the button below to add one.</td>');
                     $("#deposits-table tbody").append(tr);
                 }
 

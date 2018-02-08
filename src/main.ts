@@ -167,6 +167,13 @@ function refreshProjects(event: any) {
   });
 }
 
+// Catch deposit:remove
+ipcMain.on("deposit:remove", (event:any, id:number) => {
+  db.run("DELETE FROM DEPOSIT WHERE id = ?", [id], (runResult:any, error: any) => {
+    fetchProject(null, event);
+  });
+});
+
 const template: any = [
   {
     label: 'Edit',
@@ -242,7 +249,7 @@ if (process.platform === 'darwin') {
     }
   );
 
-  template[2].submenu.splice(2, 1);
+  //template[2].submenu.splice(2, 1);
 
   // Window menu
   template[3].submenu = [
