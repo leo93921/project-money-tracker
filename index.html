@@ -26,19 +26,6 @@
 
     <body>
         <ul id="slide-out" class="side-nav">
-            <li class="side-nav-header">
-                <div class="user-view">
-                    <div class="background">
-                        <img src="./assets/images/user_backgroud.jpg">
-                    </div>
-                    <a href="#!name">
-                        <span class="white-text name">Leonardo Capoccia</span>
-                    </a>
-                    <a href="#!email">
-                        <span class="white-text email">leonardo.capoccia@hotmail.it</span>
-                    </a>
-                </div>
-            </li>
         </ul>
         <nav class="light-blue darken-1">
             <div class="nav-wrapper">
@@ -309,12 +296,13 @@
             ipcRenderer.on('projects:fetched', (event, projects) => {
 
                 const projectsUl = $("ul#slide-out.side-nav");
-                const projectsHeader = $("ul#slide-out li.side-nav-header");
-
                 projectsUl.html("");
-                projectsUl.append(projectsHeader);
                 let index = 1;
-                projects.forEach((project) => {
+                
+                if (projects.length > 0) {
+                    projectsUl.append("<li><a class=\"subheader\">Active Projects</a></li>");
+
+                    projects.forEach((project) => {
                     const li = $('<li></li>')
                     const a = $('<a class="waves-effect project-item project-dropdown-' + index + '" role="button">' + project.name + '</a>');
                     li.append(a);
@@ -324,6 +312,10 @@
                     });
                     projectsUl.append(li);
                 });
+                } else {
+                    projectsUl.append("<li><a class=\"subheader\">No Projects created</a></li>");
+                }
+                
             });
 
             ipcRenderer.on("project:selected:fetched", (event, project) => {
